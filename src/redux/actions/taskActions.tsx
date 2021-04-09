@@ -1,6 +1,10 @@
 import {ActionCreator} from 'redux';
 import {taskService} from '../../service';
 import {
+  ADD_TASK_TO_LIST_ERROR,
+  ADD_TASK_TO_LIST_SUCCESS,
+  DELETE_TASK_FROM_LIST_ERROR,
+  DELETE_TASK_FROM_LIST_SUCCESS,
   GET_TASK_LIST_ERROR,
   GET_TASK_LIST_SUCCESS,
   SET_TASK_STATUS_ERROR,
@@ -8,19 +12,30 @@ import {
   Task,
   TaskActions,
 } from '../types';
-//Başarılıysa reducer'a GET_TASK_LIST_SUCCESS action'un ve parametresini döndürüyoruz.
 const getTaskListSuccess: ActionCreator<TaskActions> = (list: Task[]) => {
   return {type: GET_TASK_LIST_SUCCESS, payload: list};
 };
 const getTaskListError: ActionCreator<TaskActions> = (message: string) => {
   return {type: GET_TASK_LIST_ERROR, payload: message};
 };
-//service'mizden dönen değerimizin durumuna göre succes yada error action types'larımızı reducer'a göndereceğiz.
 const setTaskStatusSuccess: ActionCreator<TaskActions> = (list: Task[]) => {
   return {type: SET_TASK_STATUS_SUCCESS, payload: list};
 };
 const setTaskStatusError: ActionCreator<TaskActions> = (message: string) => {
   return {type: SET_TASK_STATUS_ERROR, payload: message};
+};
+
+const addTaskToListSuccess:ActionCreator<TaskActions>=(list:Task[])=>{
+  return {type:ADD_TASK_TO_LIST_SUCCESS, payload:list}
+};
+const addTaskToListError: ActionCreator<TaskActions> = (message: string) => {
+  return {type: ADD_TASK_TO_LIST_ERROR, payload: message};
+};
+const deleteTaskFromListSuccess:ActionCreator<TaskActions>=(list:Task[])=>{
+  return {type:DELETE_TASK_FROM_LIST_SUCCESS, payload:list}
+};
+const deleteTaskFromListError: ActionCreator<TaskActions> = (message: string) => {
+  return {type: DELETE_TASK_FROM_LIST_ERROR, payload: message};
 };
 
 export function getTaskList() {
@@ -44,6 +59,31 @@ export function setTaskStatus({id}: {id: number}) {
       },
       error => {
         dispatch(setTaskStatusError('Server Error'));
+      },
+    );
+  };
+}
+
+export function addTaskToList({text}:{text:string}){
+  return dispatch=>{
+    return taskService.addTaskToList({text}).then(
+      response=>{
+        dispatch(addTaskToListSuccess(response));
+      },
+      error=>{
+          dispatch(addTaskToListError('Server Error'))
+      }
+    )
+  }
+}
+export function deleteTaskFromList({id}: {id: number}) {
+  return dispatch => {
+    return taskService.deleteTaskFromList({id}).then(
+      response => {
+        dispatch(deleteTaskFromListSuccess(response));
+      },
+      error => {
+        dispatch(deleteTaskFromListError('Server Error'));
       },
     );
   };

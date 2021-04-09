@@ -1,5 +1,3 @@
-//Örnek göstermek adına bir liste oluşturup bu liste üzerinden işlemlerimi gerçekleştireceğim.
-
 import {Task} from '../redux/types';
 
 const list: Task[] = [
@@ -21,21 +19,19 @@ const list: Task[] = [
 ];
 
 const data = {
-  //listemizi data nesnemizin içeriside tutacağız.
   list,
 };
 
 export const taskService = {
-  //metolarımızı actiondan çağırabilmek için export ediyoruz.
   getTaskList,
   setTaskStatus,
+  addTaskToList,
+  deleteTaskFromList,
 };
 async function getTaskList(): Promise<Task[]> {
-  // Promise<Task[]> listemizin geri dönüş tipini belirtiyoruz.
   return data.list;
 }
 async function setTaskStatus({id}: {id: number}): Promise<Task[]> {
-  //metodumuzun alacağı parametreyi tip tanımını yazarak alıyoruz.
   const list = data.list;
   list.map(task => {
     if (task.id == id) {
@@ -43,4 +39,18 @@ async function setTaskStatus({id}: {id: number}): Promise<Task[]> {
     }
   });
   return list;
+}
+async function addTaskToList({text}:{text:string}):Promise<Task[]>{
+  const list=data.list;
+  const taskItem:Task={
+   id:list.length+1,
+   isDone:false,
+   title:text
+  }
+  list.push(taskItem)
+  return list;
+}
+async function deleteTaskFromList({id}:{id:number}):Promise<Task[]>{
+  data.list = data.list.filter(item => item.id !== id);
+  return data.list;
 }
